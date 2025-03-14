@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from app.config import settings
 from app.logging_conf import setup_logging
-from app.routers import example
+from app.endpoints import endpoints
 
 logger = setup_logging()
 
