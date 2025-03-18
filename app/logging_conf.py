@@ -1,22 +1,29 @@
 import logging
+import json
+import sys
 
-def setup_logging():
-    # Create a custom logger
-    logger = logging.getLogger("my_microservice")
-    logger.setLevel(logging.INFO)
+class JSONFormatter(logging.Formatter):
+    """Custom formatter for structured JSON logs."""
+    def format(self, record):
+        log_entry = {
+            "timestamp": self.formatTime(record),
+            "level": record.levelname,
+            "service": "my_microservice",
+            "message": record.getMessage(),
+            "module": record.module,
+            "function": record.funcName,
+        }
+        if record.exc_info:
+            log_entry["exception"] = self.formatException(record.exc_info)
+        return json.dumps(log_entry)
 
-    # Create handlers (console handler in this simple example)
-    console_handler = logging.StreamHandler()
-    console_handler.setLevel(logging.INFO)
+# Configure logging
+logger = logging.getLogger("my_microservice")
+handler = logging.StreamHandler(sys.stdout)
+handler.setFormatter(JSONFormatter())
+logger.addHandler(handler)
+logger.setLevel(logging.INFO)
 
-    # Create formatters and add it to handlers
-    formatter = logging.Formatter(
-        "[%(asctime)s] [%(levelname)s] [%(name)s] - %(message)s",
-        datefmt="%Y-%m-%d %H:%M:%S",
-    )
-    console_handler.setFormatter(formatter)
-
-    # Add handlers to the logger
-    logger.addHandler(console_handler)
-
+def get_logger():
     return logger
+
