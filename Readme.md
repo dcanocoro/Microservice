@@ -1,129 +1,167 @@
-# FastAPI python microservice
 
+# Documentación Microservicio de FastAPI en Python
 
-# Microservice Documentation
+## 1. Introducción
 
-## 1. Introduction
+¡Bienvenido a la **Plantilla de Microservicio** construida con FastAPI! Esta plantilla incluye:
 
-Welcome to the **Microservice Template** built with FastAPI! This template showcases:
+- **Estructura básica del proyecto**: Separación clara de responsabilidades (punto de entrada principal, endpoints, configuraciones y seguridad).
+- **Autenticación**: Un ejemplo usando tokens JWT.
+- **Llamadas a APIs externas**: Demostración de solicitudes a servicios internos o de terceros.
+- **Registro de logs**: Configuración básica de logging para eventos de inicio y apagado.
+- **Configuración**: Fácil gestión de variables de entorno para distintos entornos (desarrollo, producción, etc.).
 
-- **Basic Project Structure**: Clean separation of concerns (main entry point, endpoints, configurations, and security).
-- **Authentication**: An example using JWT tokens.
-- **External API Calls**: Demonstrates making requests to third-party or internal services.
-- **Logging**: Basic logging configuration for startup and shutdown events.
-- **Configuration**: Easily manage environment variables for different environments (development, production, etc.).
-
-This documentation will walk you through the structure of the project, how requests are handled, and how the authentication/authorization works.
+Esta documentación te guiará a través de la estructura del proyecto, cómo se manejan las solicitudes y cómo funciona la autenticación/autorización.
 
 ---
 
-## 2. Architecture at a Glance
+## 2. Arquitectura a simple vista
 
 ```
 my_microservice/
 │
-├── main.py                   # Application entry point
+├── main.py                   # Punto de entrada de la aplicación
 ├── app/
-│   ├── config.py             # Central configuration (env variables, etc.)
-│   ├── logging_conf.py       # Logging setup
-│   ├── security/
-│   │   ├── __init__.py
-│   │   └── jwt.py            # JWT-related functions and dependencies
+│   ├── config.py             # Configuración central (variables de entorno, etc.)
+│   ├── logging_conf.py       # Configuración de logging
+│   ├── middleware.py         # Configuración del middleware para logging
+│   ├── security.py           # Funciones y dependencias relacionadas con JWT         
 │   ├── models/
 │   │   ├── __init__.py
-│   │   ├── auth.py           # Auth-related Pydantic models
-│   │   ├── user.py           # User-related Pydantic models
-│   │   └── external.py       # External service Pydantic models
+│   │   ├── auth.py           # Modelos Pydantic relacionados con autenticación
+│   │   ├── user.py           # Modelos Pydantic relacionados con usuarios
+│   │   └── external.py       # Modelos Pydantic para servicios externos
 │   └── endpoints/
 │       ├── __init__.py
-│       ├── public.py         # Public endpoints that do not require authentication
-│       ├── private.py        # Endpoints that require JWT-based auth
-│       ├── auth.py           # Login and token generation endpoints
-│       └── external.py       # Demonstrates making HTTP calls to an external API
-└── requirements.txt          # Python dependencies
+│       ├── public.py         # Endpoints públicos sin autenticación
+│       ├── private.py        # Endpoints que requieren autenticación con JWT
+│       ├── auth.py           # Endpoints de inicio de sesión y generación de tokens
+│       └── external.py       # Demostración de llamadas HTTP a una API externa
+└── requirements.txt          # Dependencias de Python
 ```
 
-### Key Principles
+### Principios clave
 
-- **Separation of Concerns**: Each endpoint group (public, private, auth, external) lives in its own file under `app/endpoints`.
-- **Reusable Modules**: Security utilities, logging configuration, and environment configuration are each in dedicated modules.
-- **Pydantic Models**: Inputs and outputs use Pydantic for validation, ensuring predictable data structures and automatically generated OpenAPI docs.
+- **Separación de responsabilidades**: Cada grupo de endpoints (público, privado, auth, externo) está en su propio archivo dentro de `app/endpoints`.
+- **Módulos reutilizables**: Utilidades de seguridad, configuración de logging y configuración de entorno en módulos dedicados.
+- **Modelos Pydantic**: Uso de Pydantic para validación de entradas y salidas, asegurando estructuras de datos predecibles y documentación OpenAPI automática.
 
 ---
 
-## 3. Installation and Setup
+## 3. Instalación y Configuración
 
-### Clone the repository:
+### Clonar el repositorio:
 
 ```bash
 git clone https://github.com/your-org/my_microservice.git
 cd my_microservice
 ```
 
-### Create and activate a virtual environment (recommended):
+### Crear y activar un entorno virtual (recomendado):
 
 ```bash
 python -m venv venv
-source venv/bin/activate  # On Linux/Mac
-# Windows users:
+source venv/bin/activate  # En Linux/Mac
+# Usuarios de Windows:
 venv\Scripts\activate
 ```
 
-### Install dependencies:
+### Instalar dependencias:
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### Run the application:
+### Ejecutar la aplicación:
 
 ```bash
 uvicorn main:app --reload
 ```
 
-This will start the server in development mode on [http://127.0.0.1:8000](http://127.0.0.1:8000).
+Esto iniciará el servidor en modo desarrollo en [http://127.0.0.1:8000](http://127.0.0.1:8000).
 
-### Open API Docs:
+### Documentación OpenAPI:
 
-Once the server is running, navigate to [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs) to see the auto-generated interactive documentation.
-
----
-
-## 4. Main Application Entry Point (`main.py`)
-
-
-
-### Explanation:
-
-- `app = FastAPI(...)`: Initializes the FastAPI application.
-- **Routers**: Each router (public, private, auth, external) is defined in a dedicated Python file and included here with a unique prefix (`/api/v1/...`).
-- **Logging**: On startup/shutdown, the service logs messages indicating the environment or any other important info.
-- **CORS**: Allows cross-origin requests; adjust to fit your production security policy.
+Una vez que el servidor esté en ejecución, navega a [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs) para ver la documentación interactiva generada automáticamente.
 
 ---
 
-## 5. Configuration (`app/config.py`)
+## 4. Punto de entrada principal de la aplicación (`main.py`)
 
+### Explicación:
 
-
-### Key Points:
-
-- `BaseSettings` from Pydantic automatically reads environment variables and `.env` file values.
-- `settings` is an instance you can import across the entire application (`settings.ENVIRONMENT`, etc.).
+- `app = FastAPI(...)`: Inicializa la aplicación FastAPI.
+- **Routers**: Cada router (público, privado, auth, externo) se define en un archivo Python separado y se incluye aquí con un prefijo único (`/api/v1/...`).
+- **Logging**: En el inicio y apagado, el servicio registra mensajes indicando el entorno o cualquier otra información relevante.
+- **CORS**: Permite solicitudes de origen cruzado; ajústalo según tu política de seguridad en producción.
 
 ---
 
-## 6. Logging Configuration (`app/logging_conf.py`)
+## 5. Configuración (`app/config.py`)
 
+### Puntos clave:
 
+- `BaseSettings` de Pydantic lee automáticamente las variables de entorno y los valores del archivo `.env`.
+- `settings` es una instancia que puedes importar en toda la aplicación (`settings.ENVIRONMENT`, etc.).
 
-## 7. Security (JWT) (`app/security/jwt.py`)
+---
 
+## 6. Configuración de Logging (`app/logging_conf.py`)
 
+---
 
-## 8. Models (`app/models/*`)
+## 7. Seguridad (JWT) (`app/security/jwt.py`)
 
-### Example: `user.py`
+La seguridad en este microservicio se maneja a través de **JSON Web Tokens (JWT)**, lo que permite autenticar y autorizar a los usuarios de manera segura. Se usa **OAuth2 con flujo de contraseña** para obtener tokens de acceso.
+
+### ¿Por qué usar JWT?
+
+- **Sin estado**: No es necesario almacenar sesiones en el servidor, ya que el token contiene toda la información de autenticación.
+- **Seguro**: Firmado digitalmente con una clave secreta, evitando manipulaciones maliciosas.
+- **Flexible**: Se puede usar en múltiples servicios y plataformas sin necesidad de compartir sesiones.
+
+### Generación de tokens
+
+Para autenticar a un usuario, se genera un token JWT con una fecha de expiración. Este token incluye la información del usuario y se firma digitalmente para garantizar su integridad.
+
+```python
+def create_access_token(data: dict, expires_delta: Union[int, None] = None):
+    """
+    Genera un JWT token con expiración.
+    """
+    return encoded_jwt
+```
+
+### Validación y Decodificación de Tokens
+
+Cada vez que un usuario realiza una solicitud protegida, el token se valida y se extrae la información de autenticación. Si el token ha expirado o ha sido modificado, la solicitud se rechaza.
+
+```python
+def decode_access_token(token: str):
+    """
+    Decodifica y verifica un JWT token.
+    """
+```
+
+### Protección de Endpoints
+
+Los endpoints protegidos requieren que el usuario envíe su token en la cabecera de autorización. FastAPI se encarga de verificar la validez del token antes de conceder acceso.
+
+```python
+@router.get("/", response_model=dict)
+def private_endpoint(current_user: User = Depends(get_current_user)):
+    """
+    Enpoint privado que requiere JWT válido.
+    """
+    return {"message": f"Hello, {current_user.username}. This is a private endpoint."}
+
+```
+
+---
+
+## 8. Modelos (`app/models/*`)
+
+### Ejemplo: `user.py`
 
 ```python
 from pydantic import BaseModel
@@ -134,34 +172,29 @@ class User(BaseModel):
     email: Optional[str] = None
 ```
 
-### Why Pydantic?
+### ¿Por qué usar Pydantic?
 
-- Ensures the data structure is validated against the expected schema.
-- Auto-generates OpenAPI docs (which you can see at `/docs`).
+- Garantiza que la estructura de datos se valide según el esquema esperado.
+- Genera automáticamente la documentación OpenAPI (visible en `/docs`).
 
 ---
 
+## 9. Implementación de Endpoints (`app/endpoints/*`)
 
-## 9. Endpoint Implementations (`app/endpoints/*`)
+Cada archivo define una instancia de `APIRouter` separada que se monta en `main.py`. La estructura de los endpoints es la siguiente:
 
-Each file defines a separate `APIRouter` instance that is mounted in `main.py`. The endpoints are structured as follows:
+- **Endpoints Públicos**: Accesibles sin autenticación, como un mensaje de bienvenida o información de usuario pública.
+- **Endpoints Privados**: Requieren autenticación basada en JWT y permiten acciones específicas de usuario.
+- **Endpoints de Autenticación**: Manejan el inicio de sesión y la generación de tokens para el control de acceso.
+- **Llamadas a API Externas**: Demuestra cómo hacer solicitudes HTTP a servicios de terceros con manejo de errores y validación de respuestas.
 
-- **Public Endpoints**: Accessible without authentication, such as a welcome message or public user info.
-- **Private Endpoints**: Require JWT-based authentication and allow user-specific actions.
-- **Auth Endpoints**: Handle login and token generation, providing access control.
-- **External API Calls**: Demonstrate how to make HTTP requests to third-party services while ensuring error handling and response validation.
+### Consideraciones clave:
 
-### Key Considerations:
+- **Seguridad**: Los endpoints privados usan inyección de dependencias para validar tokens JWT antes de conceder acceso.
+- **Diseño estructurado de la API**: Cada tipo de endpoint está organizado en archivos separados para facilitar el mantenimiento.
+- **Manejo de errores**: Excepciones adecuadas garantizan que se devuelvan errores HTTP cuando las solicitudes externas fallen.
 
-- **Security**: Private endpoints use dependency injection to validate JWT tokens before granting access.
-- **Structured API Design**: Each endpoint type is organized in separate files for maintainability.
-- **Error Handling**: Proper exception handling ensures that HTTP errors are returned when external requests fail.
-
-This structure ensures a scalable and modular approach to handling different API functionalities.
-
-### Example Implementation of Routers
-
-Below is an example of how routers are implemented and included in `main.py`:
+### Ejemplo de implementación
 
 #### `app/endpoints/public.py`
 ```python
@@ -172,25 +205,8 @@ router = APIRouter()
 @router.get("/", response_model=dict)
 def root_public_endpoint():
     """
-    Public endpoint with no authentication required.
+    Endpoint público sin autenticación requerida.
     """
-    return {"message": "Welcome to the public endpoint!"}
+    return {"message": "¡Bienvenido al endpoint público!"}
 ```
 
-#### `main.py`
-```python
-from fastapi import FastAPI
-from app.endpoints.public import router as public_router
-from app.endpoints.private import router as private_router
-from app.endpoints.auth import router as auth_router
-from app.endpoints.external import router as external_router
-
-app = FastAPI()
-
-app.include_router(public_router, prefix="/api/v1/public", tags=["Public Endpoints"])
-app.include_router(private_router, prefix="/api/v1/private", tags=["Private Endpoints"])
-app.include_router(auth_router, prefix="/api/v1/auth", tags=["Auth"])
-app.include_router(external_router, prefix="/api/v1/external", tags=["External"])
-```
-
-This demonstrates how routers are structured and integrated into the FastAPI application to ensure modular and maintainable API design.

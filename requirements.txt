@@ -1,5 +1,9 @@
-fastapi==0.88.0
-uvicorn==0.20.0
-python-dotenv==0.19.2
-pyjwt==2.4.0
-httpx==0.23.0
+fastapi
+uvicorn
+python-dotenv
+pyjwt
+httpx
+pydantic
+pyjwt
+starlette
+pydantic-settings

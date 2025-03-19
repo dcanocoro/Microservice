@@ -1,7 +1,7 @@
 # app/endpoints/auth.py
 from fastapi import APIRouter, HTTPException, Depends
 from starlette.status import HTTP_401_UNAUTHORIZED
-from app.security.jwt import create_access_token
+from app.security import create_access_token
 from app.models.auth import LoginInput, LoginResponse
 
 router = APIRouter()
