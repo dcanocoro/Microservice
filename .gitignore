@@ -1,7 +1,7 @@
-# Ignore virtual environment
-venv/
-myenv/
 Lib/
 Scripts/
-Include/
+__pycache__/
+.venv/
+pyvenv.cfg
+*.pyc
 .env
