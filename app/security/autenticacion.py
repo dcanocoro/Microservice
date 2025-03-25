@@ -39,14 +39,6 @@ def get_jwks() -> dict:
             detail="Could not fetch JWKS"
         )
 
-def create_access_token(data: dict, expires_minutes: Optional[int] = None) -> str:
-    """
-    Genera un JWT (caso en el que usas HS256 local).
-    """
-    expire = time.time() + (expires_minutes or settings.JWT_EXPIRE_MINUTES)*60
-    data.update({"exp": expire})
-    token = jwt.encode(data, settings.JWT_SECRET_KEY, algorithm=settings.JWT_ALGORITHM)
-    return token
 
 def decode_access_token(token: str) -> dict:
     """
@@ -69,11 +61,12 @@ def decode_access_token(token: str) -> dict:
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Token expired"
         )
-    except jwt.JWTError:
+    except jwt.PyJWTError:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid token"
         )
+
 
 async def authenticate_token(headers: dict = Depends(validate_headers)) -> dict:
     """

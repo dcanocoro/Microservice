@@ -1,29 +1,21 @@
+#app/utilities/middleware.py
 from fastapi import Request
-from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
+from starlette.responses import Response
 import time
-import json
-from app.utilities.logging_conf import get_logger
+from app.utilities.logging_conf import get_logger, get_technical_logger
 
 logger = get_logger()
+technical_logger = get_technical_logger()
 
 class LoggingMiddleware(BaseHTTPMiddleware):
-    """Middleware to log all requests and responses"""
-    async def dispatch(self, request: Request, call_next):
+    """Middleware para registrar todas las peticiones y respuestas"""
+    async def dispatch(self, request: Request, call_next: RequestResponseEndpoint) -> Response:
         start_time = time.time()
         response = await call_next(request)
         process_time = time.time() - start_time
 
-        log_data = {
-            "message": "Request processed",
-            "method": request.method,
-            "path": request.url.path,
-            "status_code": response.status_code,
-            "response_time": f"{process_time:.2f}s"
-        }
-        
-        if response.status_code >= 400:
-            logger.warning(json.dumps(log_data))
-        else:
-            logger.info(json.dumps(log_data))
-        
+        logger.activity(request, response)
+        technical_logger.info(f"Request processed in {process_time:.4f} seconds")  # Log técnico
+
         return response

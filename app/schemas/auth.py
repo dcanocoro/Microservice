@@ -1,4 +1,4 @@
-# app/models/auth.py
+# app/schemas/auth.py
 from pydantic import BaseModel
 
 class LoginInput(BaseModel):

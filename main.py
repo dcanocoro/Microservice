@@ -14,7 +14,7 @@ logger = get_logger()
 
 app = FastAPI(title=settings.PROJECT_NAME)
 
-# Orden de middlewares: primero logging, luego seguridad
+# Middleware de seguridad
 app.add_middleware(LoggingMiddleware)
 
 # (Opcional) Si es necesario, configurar CORS:
