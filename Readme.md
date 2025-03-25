@@ -17,6 +17,46 @@ Esta documentación te guiará a través de la estructura del proyecto, cómo se
 
 ## 2. Arquitectura a simple vista
 
+```mermaid
+  graph TD;
+    subgraph "FastAPI Microservice"
+      Main["main.py (Entry Point)"]
+      Config["config.py (Configuration Management)"]
+      Logging["logging_conf.py (Logging Configuration)"]
+      Middleware["middleware.py (Middleware)"]
+      Security["security.py (JWT Authentication)"]
+      
+      subgraph "Models"
+        AuthModel["auth.py (Authentication Models)"]
+        UserModel["user.py (User Models)"]
+        ExternalModel["external.py (External Services Models)"]
+      end
+      
+      subgraph "Endpoints"
+        PublicEP["public.py (Public Endpoints)"]
+        PrivateEP["private.py (Private Endpoints)"]
+        AuthEP["auth.py (Auth Endpoints)"]
+        ExternalEP["external.py (External API Calls)"]
+      end
+    end
+    
+    Main -->|Imports & Calls| Config
+    Main -->|Includes| Logging
+    Main -->|Middleware Registration| Middleware
+    Main -->|Security Integration| Security
+    Main -->|Defines Routes| PublicEP & PrivateEP & AuthEP & ExternalEP
+    
+    Security -->|Uses| AuthModel
+    PrivateEP -->|Requires| Security
+    AuthEP -->|Uses| Security
+    ExternalEP -->|Calls APIs| ExternalModel
+    PublicEP -->|Provides Access to| UserModel
+    
+    Config -->|Loads Environment Variables| Main
+    Logging -->|Registers Logs| Main
+```
+
+
 ```
 my_microservice/
 │
@@ -209,4 +249,6 @@ def root_public_endpoint():
     """
     return {"message": "¡Bienvenido al endpoint público!"}
 ```
+
+---
 

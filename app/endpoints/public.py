@@ -1,6 +1,6 @@
 # app/endpoints/public.py
 from fastapi import APIRouter
-from app.models.user import PublicUser  # Example: a Pydantic model
+from app.schemas.user import PublicUser  # Example: a Pydantic model
 
 router = APIRouter()
 

@@ -1,0 +1,1 @@
+## métodos para conectar con couchbase. 

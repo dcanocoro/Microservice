@@ -2,7 +2,7 @@
 from fastapi import APIRouter, HTTPException
 import httpx
 from app.config import settings
-from app.models.external import Todo  # Example Pydantic model for external data
+from app.schemas.external import Todo  # Example Pydantic model for external data
 
 router = APIRouter()
 

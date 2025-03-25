@@ -2,7 +2,7 @@ from fastapi import Request
 from starlette.middleware.base import BaseHTTPMiddleware
 import time
 import json
-from app.logging_conf import get_logger
+from app.utilities.logging_conf import get_logger
 
 logger = get_logger()
 
